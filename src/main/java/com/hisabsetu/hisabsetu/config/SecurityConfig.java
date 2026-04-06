@@ -17,86 +17,58 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
-// @Configuration
-// @EnableMethodSecurity
-// @RequiredArgsConstructor
-// public class SecurityConfig {
 
-//     private final JwtFilter jwtFilter;
+@Configuration
+@EnableMethodSecurity
+@RequiredArgsConstructor
+public class SecurityConfig {
 
-//     @Bean
-//     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    private final JwtFilter jwtFilter;
 
-//         http
-//                 .csrf(csrf -> csrf.disable())
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-//                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+        http
+            .csrf(csrf -> csrf.disable())
 
-//                 .sessionManagement(session ->
-//                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-//                 )
+            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
 
-//                 .authorizeHttpRequests(auth -> auth
-//                         .requestMatchers("/api/auth/**").permitAll()
-//                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // 🔥 ADD THIS
-//                         .anyRequest().authenticated()
-//                 )
+            .sessionManagement(session ->
+                    session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            )
 
-//                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+            .authorizeHttpRequests(auth -> auth
+                    .requestMatchers("/", "/api/auth/**").permitAll()
+                    .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                    .anyRequest().authenticated()
+            )
 
-//                 .formLogin(form -> form.disable())
-//                 .httpBasic(basic -> basic.disable());
+            .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
 
-//         return http.build();
-//     }
+            .formLogin(form -> form.disable())
+            .httpBasic(basic -> basic.disable());
 
-//     @Bean
-//     public CorsConfigurationSource corsConfigurationSource() {
+        return http.build();
+    }
 
-//         CorsConfiguration config = new CorsConfiguration();
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
 
-//         config.setAllowedOriginPatterns(List.of(
-//                 "http://localhost:5173",
-//                 "http://localhost:4173",
-//                 "https://hisabsetu-ui.onrender.com"
-//         ));
+        CorsConfiguration config = new CorsConfiguration();
 
-//         config.setAllowedMethods(List.of("*"));
-//         config.setAllowedHeaders(List.of("*"));
-//         config.setAllowCredentials(true);
+        config.setAllowedOriginPatterns(List.of(
+                "http://localhost:5173",
+                "http://localhost:4173",
+                "https://hisabsetu-ui.onrender.com"
+        ));
 
-//         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-//         source.registerCorsConfiguration("/**", config);
+        config.setAllowedMethods(List.of("*"));
+        config.setAllowedHeaders(List.of("*"));
+        config.setAllowCredentials(true);
 
-//         return source;
-//     }
-// }
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
 
-@Bean
-public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-
-    http
-        .csrf(csrf -> csrf.disable())
-
-        .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-
-        .sessionManagement(session ->
-                session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-        )
-
-        .authorizeHttpRequests(auth -> auth
-                .requestMatchers(
-                        "/",
-                        "/api/auth/**"
-                ).permitAll()
-                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                .anyRequest().authenticated()
-        )
-
-        .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
-
-        .formLogin(form -> form.disable())
-        .httpBasic(basic -> basic.disable());
-
-    return http.build();
+        return source;
+    }
 }
