@@ -17,57 +17,86 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
-@Configuration
-@EnableMethodSecurity
-@RequiredArgsConstructor
-public class SecurityConfig {
+// @Configuration
+// @EnableMethodSecurity
+// @RequiredArgsConstructor
+// public class SecurityConfig {
 
-    private final JwtFilter jwtFilter;
+//     private final JwtFilter jwtFilter;
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+//     @Bean
+//     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-        http
-                .csrf(csrf -> csrf.disable())
+//         http
+//                 .csrf(csrf -> csrf.disable())
 
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+//                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
 
-                .sessionManagement(session ->
-                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                )
+//                 .sessionManagement(session ->
+//                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+//                 )
 
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // 🔥 ADD THIS
-                        .anyRequest().authenticated()
-                )
+//                 .authorizeHttpRequests(auth -> auth
+//                         .requestMatchers("/api/auth/**").permitAll()
+//                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // 🔥 ADD THIS
+//                         .anyRequest().authenticated()
+//                 )
 
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+//                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
 
-                .formLogin(form -> form.disable())
-                .httpBasic(basic -> basic.disable());
+//                 .formLogin(form -> form.disable())
+//                 .httpBasic(basic -> basic.disable());
 
-        return http.build();
-    }
+//         return http.build();
+//     }
 
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
+//     @Bean
+//     public CorsConfigurationSource corsConfigurationSource() {
 
-        CorsConfiguration config = new CorsConfiguration();
+//         CorsConfiguration config = new CorsConfiguration();
 
-        config.setAllowedOriginPatterns(List.of(
-                "http://localhost:5173",
-                "http://localhost:4173",
-                "https://hisabsetu-ui.onrender.com"
-        ));
+//         config.setAllowedOriginPatterns(List.of(
+//                 "http://localhost:5173",
+//                 "http://localhost:4173",
+//                 "https://hisabsetu-ui.onrender.com"
+//         ));
 
-        config.setAllowedMethods(List.of("*"));
-        config.setAllowedHeaders(List.of("*"));
-        config.setAllowCredentials(true);
+//         config.setAllowedMethods(List.of("*"));
+//         config.setAllowedHeaders(List.of("*"));
+//         config.setAllowCredentials(true);
 
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", config);
+//         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+//         source.registerCorsConfiguration("/**", config);
 
-        return source;
-    }
+//         return source;
+//     }
+// }
+
+@Bean
+public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+
+    http
+        .csrf(csrf -> csrf.disable())
+
+        .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+
+        .sessionManagement(session ->
+                session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+        )
+
+        .authorizeHttpRequests(auth -> auth
+                .requestMatchers(
+                        "/",
+                        "/api/auth/**"
+                ).permitAll()
+                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                .anyRequest().authenticated()
+        )
+
+        .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+
+        .formLogin(form -> form.disable())
+        .httpBasic(basic -> basic.disable());
+
+    return http.build();
 }
